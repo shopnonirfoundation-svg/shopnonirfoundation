@@ -34,12 +34,38 @@
                 <p>Date: October 15, 2025</p>
                 <p>Join us for a free health check-up camp at Nijtaj Atani Para. Services include general check-ups, eye tests, and health awareness sessions.</p>
                 <a href="activity.html" class="notice-link">Read More</a>
+                <div class="document-section">
+                    <h4>Related Documents:</h4>
+                    <ul class="document-list">
+                        <li>
+                            <a href="#" class="document-link" data-filename="health_camp_schedule.csv">Health Camp Schedule</a>
+                            <span class="file-info">(CSV - 2KB)</span>
+                        </li>
+                        <li>
+                            <a href="#" class="document-link" data-filename="health_guidelines.xlsx">Health Guidelines</a>
+                            <span class="file-info">(XLSX - 15KB)</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="notice-item">
                 <h3>Education Program Enrollment</h3>
                 <p>Date: Ongoing</p>
                 <p>Enroll in our free education programs for children and adults. Limited seats available, contact us to register!</p>
                 <a href="contact.html" class="notice-link">Contact Us</a>
+                <div class="document-section">
+                    <h4>Related Documents:</h4>
+                    <ul class="document-list">
+                        <li>
+                            <a href="#" class="document-link" data-filename="enrollment_form.pdf">Enrollment Form</a>
+                            <span class="file-info">(PDF - 500KB)</span>
+                        </li>
+                        <li>
+                            <a href="#" class="document-link" data-filename="program_details.xlsx">Program Details</a>
+                            <span class="file-info">(XLSX - 25KB)</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
@@ -90,7 +116,59 @@
         }
         return gk_fileData[filename] || "";
         }
+
+        // Enhanced document handling for notices
+        document.addEventListener('DOMContentLoaded', function() {
+            const documentLinks = document.querySelectorAll('.document-link');
+            
+            documentLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const filename = this.getAttribute('data-filename');
+                    const fileContent = loadFileData(filename);
+                    
+                    if (fileContent) {
+                        // For CSV or processed text content, display in modal or download
+                        downloadFile(filename, fileContent);
+                    } else {
+                        // For other file types like PDF, open in new tab or download
+                        // In a real implementation, you'd have actual file URLs
+                        window.open(`documents/${filename}`, '_blank');
+                    }
+                });
+            });
+
+            // Function to trigger file download
+            function downloadFile(filename, content) {
+                const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+
+            // Initialize sample file data (in a real app, this would come from server)
+            // For demo purposes, adding some sample XLSX data as base64
+            gk_isXlsx = true;
+            gk_xlsxFileLookup['health_guidelines.xlsx'] = true;
+            gk_xlsxFileLookup['program_details.xlsx'] = true;
+            
+            // Sample base64 encoded XLSX data (replace with actual data)
+            gk_fileData['health_guidelines.xlsx'] = 'UEsDBBQAAAAIAGsm6lBAAAAAgAAAAAAAAAAAAAAAEAAQAAAAA...'; // Truncated sample
+            gk_fileData['program_details.xlsx'] = 'UEsDBBQAAAAIAGsm6lBAAAAAgAAAAAAAAAAAAAAAEAAQAAAAA...'; // Truncated sample
+            
+            // For CSV files, store as plain text
+            gk_fileData['health_camp_schedule.csv'] = 'Date,Time,Activity,Location\n2025-10-15,9:00 AM,Registration,Nijtaj Atani Para\n2025-10-15,10:00 AM,General Check-up,Nijtaj Atani Para';
+            
+            // For PDF, handle as external link since we can't process PDF with current JS
+            // The loadFileData will return empty for non-XLSX, so it will open external link
+        });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="scripts.js"></script>
 </body>
 </html>
